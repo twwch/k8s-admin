@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	appsv1 "k8s.io/api/apps/v1"
+	apiv1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -54,27 +56,26 @@ func main() {
 			Namespace: "test",
 			Name:      "nginx",
 		},
-		Spec:v1.PodSpec{
-				Containers: []v1.Container{
-					{Image:"nginx", Name:"nginx", Ports:[]v1.ContainerPort{{ContainerPort: 80}}},
-				},
-				RestartPolicy: v1.RestartPolicyAlways,
-				Tolerations: []v1.Toleration{
-						{Effect:v1.TaintEffectNoSchedule, Value:"no",Key:"gpu"},
-				},
+		Spec: v1.PodSpec{
+			Containers: []v1.Container{
+				{Image: "nginx", Name: "nginx", Ports: []v1.ContainerPort{{ContainerPort: 80}}},
+			},
+			RestartPolicy: v1.RestartPolicyAlways,
+			Tolerations: []v1.Toleration{
+				{Effect: v1.TaintEffectNoSchedule, Value: "no", Key: "gpu"},
+			},
 		},
 	}, metav1.CreateOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(pod)
-
-	/*deploymentsClient := clientset.AppsV1().Deployments(v1.NamespaceDefault)
+	deploymentsClient := clientset.AppsV1().Deployments(v1.NamespaceDefault)
 	//https://github.com/kubernetes/client-go/blob/master/examples/create-update-delete-deployment/main.go
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "demo-deployment",
-			Namespace:"test",
+			Name:      "demo-deployment",
+			Namespace: "test",
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: int32Ptr(2),
@@ -111,5 +112,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Created deployment %q.\n", result.GetObjectMeta().GetName())*/
+	fmt.Printf("Created deployment %q.\n", result.GetObjectMeta().GetName())
 }
